@@ -4,6 +4,8 @@ int i;
 unsigned char dataIn;
 int Space;
 int Data;                       // Data is used to receive data from buffer
+int CountShort;
+int shift;
 
 int main(void)
 {
@@ -27,14 +29,15 @@ int main(void)
     P1SEL0 |= BIT2;
 
     // Setting upper bits of port 1 as output
-    P1DIR |= BIT7 | BIT6 | BIT5 | BIT4;
+    P1DIR |= BIT7 | BIT6 | BIT5 | BIT4;     // (P1.7=14, P1.6=13, P1.5=12, P1.5=11)
     P1OUT &= ~(BIT7 | BIT6 | BIT5 | BIT4);
 
-    P2DIR |= BIT6 | BIT7;       // P2.6 as RS, P2.7 as Enable
+    P2DIR |= BIT6 | BIT7;       // P2.6 as RS (Port 4 on LCD), P2.7 as Enable (Port )
     P2OUT &= ~(BIT6 | BIT7);
 
     PM5CTL0 &= ~LOCKLPM5;       // disable digital I/O low-power default
 
+/*
     // ADC Setup
     // Configure ADC A1 pin
     P1SEL0 |= BIT1;
@@ -51,7 +54,7 @@ int main(void)
     ADCCTL1 |= ADCSHP;
 
     ADCMCTL0 |= ADCINCH_1;
-
+*/
     init();                     // call init function
     Command(0x00);              // clear LCD display
 
@@ -62,15 +65,23 @@ int main(void)
     __enable_interrupt();       // global enable
 
     while (1) {
+        Command(0x01);
+        Command("0x21");
+        Delay(200);
+        Command(0xC0);
+        DisplayPattern("I'm Alex");
+        Delay(200);
+        /*
         ADCCTL0 |= ADCENC | ADCSC;
         while((ADCIFG & ADCIFG0) == 0){}
         ADC_Value = ADCMEM0;
+        */
     }
     return 0;
 }
 
 void Command(unsigned char SendCom) {
-    for (int shift = 0; shift <= 4; shift += 4) {
+    for (shift = 0; shift <= 4; shift += 4) {
         P1OUT &= 0x0F;
         P1OUT |= (SendCom << shift) & 0xF0;
         P2OUT &= ~BIT6;         // Command mode
@@ -79,7 +90,7 @@ void Command(unsigned char SendCom) {
 }
 
 void Write(unsigned char SendWR) {
-    for (int shift = 0; shift <= 4; shift += 4) {
+    for (shift = 0; shift <= 4; shift += 4) {
         P1OUT &= 0x0F;
         P1OUT |= (SendWR << shift) & 0xF0;
         P2OUT |= BIT6;          // Write mode
@@ -119,7 +130,7 @@ int Delay(int CountLong) {
 }
 
 int InnerDelay() {
-    for (int CountShort = 0; CountShort < 102; CountShort++) {}
+    for (CountShort = 0; CountShort < 102; CountShort++) {}
     return 0;
 }
 
@@ -132,11 +143,58 @@ void DisplayPattern(const char* text) {
     }
 }
 
+/*
 #pragma vector = EUSCI_B0_VECTOR
 __interrupt void EUSCI_B0_I2C_ISR(void) {
     UCB0IE &= ~UCRXIE0;
     Data = UCB0RXBUF;
-/*
+
+    switch (Data) {
+        Case 0x01:              // Input window size mode
+            Command(0x01);       // Clear Display
+            Delay(200);
+            Space = 1;
+            DisplayPattern("set window size");
+            Space = 16;
+            Comnand(0xC0);
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xB0);
+            DisplayPattern("C");
+            Space = 30;
+            DisplayPattern("N=3");
+            break;
+        Case 0x02:              // Set pattern mode
+            Command(0x01);
+            Delay(200);
+            Space = 1;
+            DisplayPattern("set pattern");
+            Space = 16;
+            Command(0xC0);
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xB0);
+            DisplayPattern("C");
+            Space = 30;
+            DisplayPattern("N=3");
+            break;
+        Case 0x03:
+            Command(0x01);
+            Delay(200);
+            Space = 1;
+            DisplayPattern("rotate left");
+            Space = 16;
+            Command(0xC0);
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xB0);
+            DisplayPattern("C");
+            Space = 30;
+            DisplayPattern("N=3");
+            break;
+    }
+
+/* Project 4 display stuff
     switch (Data) {
         case 0x23:              // '#' clears display
             Command(0x01);
@@ -182,7 +240,8 @@ __interrupt void EUSCI_B0_I2C_ISR(void) {
             Space++;
             break;
     }
-*/
+
     Delay(200);
     UCB0IE |= UCRXIE0;
 }
+*/
