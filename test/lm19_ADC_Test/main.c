@@ -1,6 +1,9 @@
 #include <msp430.h>
 
 unsigned int ADC_Value;
+unsigned int n = 3;
+unsigned int num = 0;
+float temp[9];
 float temperature;
 
 int main(void)
@@ -65,4 +68,20 @@ __interrupt void ADC_ISR(void)
         P1OUT &= ~BIT0; // LED1 OFF
         P6OUT |= BIT6;  // LED2 ON (Green)
     }
+
+    int i;
+
+    if (num > n) {
+        float average = 0.0;
+        for (i = 0; i<n; i++){
+            average = average + temp[i];
+        }
+        average = average/n;
+        num = 0;
+        // output temp to display
+    }else{
+        temp[num] = temperature;
+        num++;
+    }
+
 }
