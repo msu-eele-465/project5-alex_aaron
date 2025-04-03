@@ -2,10 +2,11 @@
 
 int i;
 unsigned char dataIn;
+unsigned char TempType;
 int Space;
 int Data;                       // Data is used to receive data from buffer
-int CountShort;
-int shift;
+int Temp;
+int n = 3;
 
 int main(void)
 {
@@ -29,32 +30,14 @@ int main(void)
     P1SEL0 |= BIT2;
 
     // Setting upper bits of port 1 as output
-    P1DIR |= BIT7 | BIT6 | BIT5 | BIT4;     // (P1.7=14, P1.6=13, P1.5=12, P1.5=11)
+    P1DIR |= BIT7 | BIT6 | BIT5 | BIT4;
     P1OUT &= ~(BIT7 | BIT6 | BIT5 | BIT4);
 
-    P2DIR |= BIT6 | BIT7;       // P2.6 as RS (Port 4 on LCD), P2.7 as Enable (Port )
+    P2DIR |= BIT6 | BIT7;       // P2.6 as RS, P2.7 as Enable
     P2OUT &= ~(BIT6 | BIT7);
 
     PM5CTL0 &= ~LOCKLPM5;       // disable digital I/O low-power default
 
-/*
-    // ADC Setup
-    // Configure ADC A1 pin
-    P1SEL0 |= BIT1;
-    P1SEL1 |= BIT1;
-
-    PM5CTL0 &= ~LOCKLPM5;                                   // Turn on GPIO
-
-    // Configure ADC12
-    ADCCTL0 &= ~ADCSHT;
-    ADCCTL0 |= ADCSHT_2;
-    ADCCTL0 |= ADCON;
-    
-    ADCCTL1 |= ADCSSEL_2;
-    ADCCTL1 |= ADCSHP;
-
-    ADCMCTL0 |= ADCINCH_1;
-*/
     init();                     // call init function
     Command(0x00);              // clear LCD display
 
@@ -65,23 +48,17 @@ int main(void)
     __enable_interrupt();       // global enable
 
     while (1) {
-        Command(0x01);
-        Command("0x21");
-        Delay(200);
-        Command(0xC0);
-        DisplayPattern("I'm Alex");
-        Delay(200);
-        /*
-        ADCCTL0 |= ADCENC | ADCSC;
-        while((ADCIFG & ADCIFG0) == 0){}
-        ADC_Value = ADCMEM0;
-        */
+        if (Data > 0x26) {
+            TempType = 'F';
+        } else {
+            TempType = 'C';
+        }
     }
     return 0;
 }
 
 void Command(unsigned char SendCom) {
-    for (shift = 0; shift <= 4; shift += 4) {
+    for (int shift = 0; shift <= 4; shift += 4) {
         P1OUT &= 0x0F;
         P1OUT |= (SendCom << shift) & 0xF0;
         P2OUT &= ~BIT6;         // Command mode
@@ -90,7 +67,7 @@ void Command(unsigned char SendCom) {
 }
 
 void Write(unsigned char SendWR) {
-    for (shift = 0; shift <= 4; shift += 4) {
+    for (int shift = 0; shift <= 4; shift += 4) {
         P1OUT &= 0x0F;
         P1OUT |= (SendWR << shift) & 0xF0;
         P2OUT |= BIT6;          // Write mode
@@ -130,7 +107,7 @@ int Delay(int CountLong) {
 }
 
 int InnerDelay() {
-    for (CountShort = 0; CountShort < 102; CountShort++) {}
+    for (int CountShort = 0; CountShort < 102; CountShort++) {}
     return 0;
 }
 
@@ -143,105 +120,151 @@ void DisplayPattern(const char* text) {
     }
 }
 
-/*
 #pragma vector = EUSCI_B0_VECTOR
 __interrupt void EUSCI_B0_I2C_ISR(void) {
     UCB0IE &= ~UCRXIE0;
     Data = UCB0RXBUF;
 
     switch (Data) {
-        Case 0x01:              // Input window size mode
-            Command(0x01);       // Clear Display
+        case 0x41:                      // Input window size mode
+            command(0x01);      //clear display
             Delay(200);
-            Space = 1;
-            DisplayPattern("set window size");
-            Space = 16;
-            Comnand(0xC0);
+            DisplayPattern("Input Window Size");
+            command(0x40);              // move to second line
             DisplayPattern("T=");
             DisplayPattern(Temp);
-            DisplayPattern(0xB0);
-            DisplayPattern("C");
-            Space = 30;
-            DisplayPattern("N=3");
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
-        Case 0x02:              // Set pattern mode
-            Command(0x01);
+        case 0x42:                      // Input pattern mode
+            command(0x01);      // clear display
             Delay(200);
-            Space = 1;
-            DisplayPattern("set pattern");
-            Space = 16;
-            Command(0xC0);
+            DisplayPattern("Input Pattern");
             DisplayPattern("T=");
             DisplayPattern(Temp);
-            DisplayPattern(0xB0);
-            DisplayPattern("C");
-            Space = 30;
-            DisplayPattern("N=3");
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
-        Case 0x03:
-            Command(0x01);
-            Delay(200);
-            Space = 1;
-            DisplayPattern("rotate left");
-            Space = 16;
-            Command(0xC0);
-            DisplayPattern("T=");
-            DisplayPattern(Temp);
-            DisplayPattern(0xB0);
-            DisplayPattern("C");
-            Space = 30;
-            DisplayPattern("N=3");
-            break;
-    }
-
-/* Project 4 display stuff
-    switch (Data) {
         case 0x23:              // '#' clears display
             Command(0x01);
             Delay(200);
-            Space = 1;
-            Write(Data);
             break;
         case 0x24:              // Pattern 0
+            Command(0x01);
             DisplayPattern("static");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
         case 0x25:              // Pattern 1
+            Command(0x01);
             DisplayPattern("toggle");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
         case 0x26:              // Pattern 2
+            Command(0x01);
             DisplayPattern("up counter");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
         case 0x27:              // Pattern 3
+            Command(0x01);
             DisplayPattern("in and out");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
         case 0x28:              // Pattern 4
+            Command(0x01);
             DisplayPattern("down counter");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
         case 0x29:              // Pattern 5
+            Command(0x01);
             DisplayPattern("rotate left");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
         case 0x2A:              // Pattern 6
+            Command(0x01);
             DisplayPattern("rotate right");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
         case 0x2B:              // Pattern 7
+            Command(0x01);
             DisplayPattern("fill left");
-            break;          
-        default:
-            if (Space == 32) {
-                Command(0x01);
-                Delay(200);
-                Space = 1;
-            } 
-            else if (Space == 16) {
-                Command(0xC0);
-                Space++;
-            }
-            Write(Data);
-            Space++;
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
             break;
+        default:
+            Command(0x01);
+            DisplayPattern("LED pattern");
+            command(0x40);              // move to second line
+            DisplayPattern("T=");
+            DisplayPattern(Temp);
+            DisplayPattern(0xDF);       // Degrees symbol
+            DisplayPattern(TempType);
+            command(0x4D);              // move to botton-right corner
+            DisplayPattern("N=");
+            DisplayPattern(n);
+            break;          
     }
-
+*/
     Delay(200);
     UCB0IE |= UCRXIE0;
 }
-*/
