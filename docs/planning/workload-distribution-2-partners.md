@@ -5,38 +5,38 @@ It is recommended that at least some of the functionality is a shared responsibi
 You are encouraged to support each other with an overall goal of successfully completing the project. If one person struggles with their responsibility, the other member is encouraged to step in. However, an agreement should be struck between the partners wherein one partner gives up some of the assigned points for that function relative to the amount of help received.  
 
 You will fill out this form:
-1. Before the project starts. This is to document your intention. 
+1. Before the project starts. This is to document your intention.
 2. Before the demo if there was any deviation from the initial plan.
 
-| Requirement/specification                                                                                 | Points | Partner 1 | Partner 2 |
+| Requirement/specification                                                                                 | Points | Alex      | Partner 2 |
 |-----------------------------------------------------------------------------------------------------------|--------|-----------|-----------|
 | **Presentation**                                                                                          |        |           |           |
-| Introduction                                                                                              | 1      |           |           |
-| Circuit diagram                                                                                           | 1      |           |           |
-| System architecture diagram                                                                               | 1      |           |           |
-| High-level flowchart                                                                                      | 1      |           |           |
-| Professional demo                                                                                         | 2      |           |           |
+| Introduction                                                                                              | 1      | 0.5       | 0.5       |
+| Circuit diagram                                                                                           | 1      | 0.5       | 0.5       |
+| System architecture diagram                                                                               | 1      | 0.5       | 0.5       |
+| High-level flowchart                                                                                      | 1      | 0.5       | 0.5       |
+| Professional demo                                                                                         | 2      | 1         | 1         |
 | **Project Requirements**                                                                                  |        |           |           |
-| The system must sample an LM19 temperature sensor.                                                        | 2      |           |           |
-| Sample the temperature sensor every 0.5 s.                                                                | 0.5    |           |           |
-| The system must calculate a moving average of n temperature values.                                       | 1      |           |           |
-| The default window size is n = 3.                                                                         | 0.5    |           |           |
-| The window size will be displayed in the bottom-right corner of the LCD.                                  | 0.5    |           |           |
-| In the "window size entry" state, the LCD will display "set window size" on the first line of the LCD:    | 0.5    |           |           |
-| When unlocked, the user can select a button on the keypad to enter the "window size entry" state.         | 0.5    |           |           |
-| The user can enter a single-digit number greater than 0 on the keypad to set the window size.             | 1      |           |           |
-| After the user has entered the window size, the system should exit the "window size entry" state.         | 0.5    |           |           |
-| In the "pattern number entry" state, the LCD will display "set pattern" on the first line of the LCD:     | 0.5    |           |           |
-| When unlocked, the user can select a button on the keypad to enter the "pattern number entry" state.      | 0.5    |           |           |
-| In the "pattern number entry" state, the user can enter a number on the keypad to select the LED pattern. | 1      |           |           |
-| After the user has entered the pattern number, the system should exit the "pattern number entry" state.   | 0.5    |           |           |
-| The temperature will be displayed in the bottom-left corner of the LCD.                                   | 0.5    |           |           |
-| The temperature will be displayed in degrees Celsius.                                                     | 2      |           |           |
-| The temperature should not be displayed until n samples have been collected.                              | 0.5    |           |           |
-| The LED pattern name is displayed on the first line of the LCD:                                           | 0.5    |           |           |
-| After n samples have been collected, the new average temperature is displayed after every new sample.     | 0.5    |           |           |
-| The pattern name is only displayed when the system is unlocked and not in one of the "user entry" states. | 0.5    |           |           |
-| Total                                                                                                     | 20     |           |           |
+| The system must sample an LM19 temperature sensor.                                                        | 2      | 1         | 1         |
+| Sample the temperature sensor every 0.5 s.                                                                | 0.5    | 0.25      | 0.25      |
+| The system must calculate a moving average of n temperature values.                                       | 1      | 0.5       | 0.5       |
+| The default window size is n = 3.                                                                         | 0.5    | 0.25      | 0.25      |
+| The window size will be displayed in the bottom-right corner of the LCD.                                  | 0.5    | 0.25      | 0.25      |
+| In the "window size entry" state, the LCD will display "set window size" on the first line of the LCD:    | 0.5    | 0.25      | 0.25      |
+| When unlocked, the user can select a button on the keypad to enter the "window size entry" state.         | 0.5    | 0.25      | 0.25      |
+| The user can enter a single-digit number greater than 0 on the keypad to set the window size.             | 1      | 0.5       | 0.5       |
+| After the user has entered the window size, the system should exit the "window size entry" state.         | 0.5    | 0.25      | 0.25      |
+| In the "pattern number entry" state, the LCD will display "set pattern" on the first line of the LCD:     | 0.5    | 0.25      | 0.25      |
+| When unlocked, the user can select a button on the keypad to enter the "pattern number entry" state.      | 0.5    | 0.25      | 0.25      |
+| In the "pattern number entry" state, the user can enter a number on the keypad to select the LED pattern. | 1      | 0.5       | 0.5       |
+| After the user has entered the pattern number, the system should exit the "pattern number entry" state.   | 0.5    | 0.25      | 0.25      |
+| The temperature will be displayed in the bottom-left corner of the LCD.                                   | 0.5    | 0.25      | 0.25      |
+| The temperature will be displayed in degrees Celsius.                                                     | 2      | 1         | 1         |
+| The temperature should not be displayed until n samples have been collected.                              | 0.5    | 0.25      | 0.25      |
+| The LED pattern name is displayed on the first line of the LCD:                                           | 0.5    | 0.25      | 0.25      |
+| After n samples have been collected, the new average temperature is displayed after every new sample.     | 0.5    | 0.25      | 0.25      |
+| The pattern name is only displayed when the system is unlocked and not in one of the "user entry" states. | 0.5    | 0.25      | 0.25      |
+| Total                                                                                                     | 20     | 10        | 10        |
 
 
 ## 🚀 Extra credit points
